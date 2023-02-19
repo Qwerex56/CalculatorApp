@@ -1,0 +1,16 @@
+:root {
+  /* ---COLOURS--- */
+  --imperial-red: hsla(359, 94%, 62%, 1);
+  --orange-crayola: hsla(21, 89%, 56%, 1);
+  --carrot-orange: hsla(33, 94%, 55%, 1);
+  --coral: hsla(20, 94%, 63%, 1);
+  --saffron: hsla(42, 93%, 64%, 1);
+  --pistachio: hsla(94, 38%, 59%, 1);
+  --zomp: hsla(162, 43%, 46%, 1);
+  --dark-cyan: hsla(178, 30%, 43%, 1);
+  --paynes-gray: hsla(208, 25%, 45%, 1);
+  --cerulean: hsla(198, 61%, 39%, 1);
+
+  /* ---FONTS--- */
+  --press-start-2p: 'Press Start 2P';
+}
