@@ -35,7 +35,6 @@ CALCULATOR.addEventListener("click", (ev) => {
   }
   if (elem.classList.contains(IS_ENDPOINT)) {
     modifyOperation(elem_val);
-    USER_DISPLAY.innerText = result;
   }
 })
 
@@ -90,9 +89,15 @@ function modifyOperation(mod) {
       }
       result = doOperation(selected_operand, memory, last_input);
       memory = result;
+      USER_DISPLAY.innerText = result;
       break;
     case 'clear':
       resetCalculator()
+      break;
+    case 'plus-minus':
+      input = parseFloat(input);
+      input *= -1;
+      USER_DISPLAY.innerText = input;
       break;
   }
 }
@@ -127,4 +132,4 @@ function resetCalculator() {
   is_first_repeat = true;
 
   USER_DISPLAY.textContent = memory;
-}parseFloat
+}

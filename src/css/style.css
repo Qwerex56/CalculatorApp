@@ -13,7 +13,7 @@ body {
 }
 
 .calculator {
-  padding: 2% 3%;
+  padding: 8px 12px;
   max-width: fit-content;
   max-height: fit-content;
   border-radius: 4px;
@@ -59,6 +59,10 @@ body {
 .calculator__input:active {
   background-color: var(--parchment);
   color: var(--bittersweet-shimmer);
+}
+.calculator__input:nth-child(3) {
+  grid-column: 3 / 5;
+  grid-row: 1 / 2;
 }
 
 .fa-solid {
