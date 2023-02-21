@@ -1,124 +1,130 @@
 //used for user inputs, also prints result of given equation
 const USER_DISPLAY  = document.querySelector(".calculator__display");
-const NUMERIC_BUTTONS = document.querySelectorAll(".calculator__numeric-input");
-const OPERAND_BUTTONS = document.querySelectorAll(".calculator__operand-input");
+const CALCULATOR    = document.querySelector(".calculator");
 
-const VALID_NUMERIC_INPUTS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Backspace'];
+const VALID_NUMERIC_INPUTS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 const VALID_OPERAND_INPUTS = ['+', '-', '*', '/'];
-const VALID_END_INPUTS     = ['=', 'Enter', 'C', 'c'];
+const VALID_END_INPUTS     = ['equals', 'Enter', 'C', 'c'];
+
+const IS_NUMERIC  = "calculator__input--numeric";
+const IS_OPERAND  = "calculator__input--operand";
+const IS_ENDPOINT = "calculator__input--endpoint";
 
 const MAX_NUM_LENGTH = 11;
 
-let memory    = 0;
-let input     = 0;
-let old_input = 0;
+let memory = 0;
+let input  = 0;
+let result = 0;
+
+let last_input = 0;
 
 let is_first_repeat = true;
 let selected_operand = VALID_OPERAND_INPUTS[0];
 
-for (let id = 0; id < NUMERIC_BUTTONS.length; id++) {
-  NUMERIC_BUTTONS[id].addEventListener("click", () => {
-    let value = id + 1;
-    if (value === 10) {
-      value = 'Backspace';
-    }
-    appendInput(value);
-  })
-}
+CALCULATOR.addEventListener("click", (ev) => {
+  let elem = ev.target;
+  let elem_val = elem.dataset.value;
 
-document.addEventListener("keydown", (ev) => {
-  if (VALID_NUMERIC_INPUTS.includes(ev.key)) {
-    appendInput(ev.key);
+  if (elem.classList.contains(IS_NUMERIC)) {
+    input = appendInput(elem_val);
+    USER_DISPLAY.innerText = input;
   }
-  else if (VALID_OPERAND_INPUTS.includes(ev.key)) {
-    selectOperation(ev.key);
+  if (elem.classList.contains(IS_OPERAND)) {
+    selectOperation(elem_val);
+    USER_DISPLAY.innerText = memory;
   }
-  else if (VALID_END_INPUTS.includes(ev.key)) {
-    if ('C' === ev.key || 'c' === ev.key) {
-      resetCalculator()
-      return;
-    }
-
-    makeOperation();
+  if (elem.classList.contains(IS_ENDPOINT)) {
+    modifyOperation(elem_val);
+    USER_DISPLAY.innerText = result;
   }
-  // console.log ("Mem = " + memory.toString() + "\nInp = " + input.toString() + "\nOldInp = " + old_input.toString());
 })
 
-function doOperation(operand, inp) {
-  let res = 0;
-  switch (operand) {
-    case '+':
-      res = memory + inp;
-      break;
-    case '-':
-      res = memory - inp;
-      break;
-    case '*':
-      res = memory * inp;
-      break;
-    case '/':
-      if (inp === 0) {
-        res = NaN;
-      }
-      res = memory / inp;
-      let res_len = res.toString().length;
-      let len_left = MAX_NUM_LENGTH - res_len;
-      if (len_left <= 0) {
-        res = res.toPrecision(MAX_NUM_LENGTH);
-      }
-      break;
-  }
-  
-  if (res.toString().length > MAX_NUM_LENGTH + 1) {
-    res = Infinity;
-  }
-  
-  return res;
-}
-
 function appendInput(num) {
-  if (input !== old_input && !is_first_repeat) {
-    let helper = input;
-    resetCalculator();
-    input = helper;
+  let val = input.toString();
+  
+  if (num === '.' && !val.includes('.')) {
+    val = val.concat(num);
+  }
+  if (num === 'DEL') {
+    val = val.substring(0, val.length - 1);
+  }
+  
+  if (VALID_NUMERIC_INPUTS.includes(num)) {
+    val = val.concat(num);
   }
 
-  if (num === 'Backspace') {
-    input = Math.floor(input / 10);
+  switch (val.charAt(0)) {
+    case '0':
+      if (val.charAt(1) === '.'){
+        break;
+      }
+      val = val.substring(1);
+      break;
+    case '.':
+      val = '0' + val;
+      break;
   }
-  else if (input.toString().length < MAX_NUM_LENGTH) {
-    input = input * 10 + parseInt(num);
+  if (val.length === 0) {
+    val = '0';
   }
-  USER_DISPLAY.textContent = input;
+
+  return val;
 }
 
 function selectOperation(oper) {
-  memory === 0 ? memory = input : memory = doOperation(selected_operand, input);
-  is_first_repeat = true;
-  input = 0;
-  
-  selected_operand = oper;
-  USER_DISPLAY.textContent = memory;
-}
-
-function makeOperation() {
-  if (is_first_repeat) {
-    old_input = input;
-    input = 0;
-    is_first_repeat = false;
+  if (parseFloat(input) !== 0) {
+    result = doOperation(selected_operand, memory, input);
+    memory = result;
   }
 
-  memory = doOperation(selected_operand, old_input);
-  USER_DISPLAY.textContent = memory;
+  selected_operand = oper;
+  input = 0;
+}
+
+function modifyOperation(mod) {
+  switch (mod) {
+    case 'equals': 
+      if (input !== '0') {
+        last_input = input;
+        input = '0';
+      }
+      result = doOperation(selected_operand, memory, last_input);
+      memory = result;
+      break;
+    case 'clear':
+      resetCalculator()
+      break;
+  }
+}
+
+function doOperation(operand, lhs, rhs) {
+  let result = 0;
+  lhs = parseFloat(lhs);
+  rhs = parseFloat(rhs);
+  switch (operand) {
+    case '+':
+      result = lhs + rhs;
+      break;
+    case '-':
+      result = lhs - rhs;
+      break;
+    case '*':
+      result = lhs * rhs;
+      break;
+    case '/':
+      break;
+  }
+  return result;
 }
 
 function resetCalculator() {
   memory    = 0;
   input     = 0;
-  old_input = 0;
+  result    = 0;
+  last_input = 0;
 
   selected_operand = '+';
   is_first_repeat = true;
 
   USER_DISPLAY.textContent = memory;
-}
+}parseFloat
