@@ -117,8 +117,14 @@ function doOperation(operand, lhs, rhs) {
       result = lhs * rhs;
       break;
     case '/':
+      if (rhs === 0) {
+        result = Infinity;
+        break;
+      }
+      result = (lhs / rhs).toPrecision(9);
       break;
   }
+
   return result;
 }
 
